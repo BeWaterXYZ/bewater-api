@@ -45,7 +45,7 @@ Returns a simple health check message.
 
 **Example:**
 ```bash
-curl -X GET http://localhost:8000/
+curl -X GET https://bewater-api.deno.dev
 ```
 
 ---
