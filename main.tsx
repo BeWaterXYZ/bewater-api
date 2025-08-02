@@ -38,6 +38,7 @@ router
     
     // Check if environment variables are set
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    // there is bug with the supabase service rolekey, it is not working with the service role key, so using anno key here to instead temply
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!supabaseUrl) {
       context.response.status = 500;
@@ -52,8 +53,7 @@ router
     }
     
     console.log("Supabase URL:", supabaseUrl);
-    console.log("Service key starts with:", supabaseKey.substring(0, 20) + "...");
-    
+    // console.log("Service key starts with:", supabaseKey.substring(0, 20) + "...");
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { data: resp, error } = await supabase
