@@ -1,11 +1,35 @@
-# AI Dimsum API Documentation
+# BeWater API
 
-Base URL: `https://backend.aidimsum.com`
+A Deno-based REST API for the BeWater ecosystem, providing endpoints for challenge management and Cantonese corpus data.
 
-## Table of Contents
-- [Public APIs](#public-apis)
+Base URL: `https://bewater-api.deno.dev`
 
-## Public APIs
+## 🚀 Quick Start
+
+### Prerequisites
+
+- [Deno](https://deno.land/) installed
+- Supabase project with proper environment variables set
+
+### Environment Variables
+
+Create a `.env` file or set the following environment variables:
+
+```bash
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+ADMIN_PWD=your_admin_password
+```
+
+### Running the Server
+
+```bash
+deno run --allow-net --allow-env --allow-read main.tsx
+```
+
+The server will start on port 8000.
+
+## 📚 API Endpoints
 
 ### 1. Health Check
 **GET** `/`
@@ -15,429 +39,69 @@ Returns a simple health check message.
 **Response:**
 ```json
 {
-  "result": "Hello, Devs for AI Dimsum!"
+  "result": "Hello, Devs for BeWater!"
 }
 ```
 
-**Curl Example:**
+**Example:**
 ```bash
-curl -X GET "https://backend.aidimsum.com/"
+curl -X GET http://localhost:8000/
 ```
 
 ---
 
-### 2. Get Corpus Apps
-**GET** `/corpus_apps`
+### 2. Get Challenge by Title
+**POST** `/challenge`
 
-Retrieves all available corpus applications.
-
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "name": "app_name",
-    "description": "app_description"
-  }
-]
-```
-
-**Curl Example:**
-```bash
-curl -X GET "https://backend.aidimsum.com/corpus_apps"
-```
-
----
-
-### 3. Get Corpus Categories
-**GET** `/corpus_categories`
-
-Retrieves all available corpus categories.
-
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "name": "category_name",
-    "description": "category_description"
-  }
-]
-```
-
-**Curl Example:**
-```bash
-curl -X GET "https://backend.aidimsum.com/corpus_categories"
-```
-
----
-
-### 4. Get Specific Corpus Category
-**GET** `/corpus_category`
-
-Retrieves a specific corpus category by name.
-
-**Parameters:**
-- `name` (required): The name of the category
-
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "name": "category_name",
-    "description": "category_description"
-  }
-]
-```
-
-**Curl Example:**
-```bash
-curl -X GET "https://backend.aidimsum.com/corpus_category?name=zyzd"
-```
-
----
-
-### 5. Text Search (Enhanced)
-**GET** `/text_search_v2`
-
-Performs text search with support for both traditional and simplified Chinese characters.
-
-**Parameters:**
-- `keyword` (required): The search keyword
-- `table_name` (required): The table to search in (currently supports "cantonese_corpus_all")
-- `limit` (optional): Maximum number of results to return
-- `supabase_url` (optional): Custom Supabase URL
-
-**Response:**
-```json
-[
-  {
-    "unique_id": "uuid",
-    "data": "character",
-    "note": {
-      "meaning": ["definition1", "definition2"],
-      "pinyin": ["pronunciation1", "pronunciation2"]
-    },
-    "category": "zyzd",
-    "tags": ["word"]
-  }
-]
-```
-
-**Curl Example:**
-```bash
-curl -X GET "https://backend.aidimsum.com/text_search_v2?keyword=為&table_name=cantonese_corpus_all&limit=10"
-```
-
----
-
-### 6. Get Corpus Item
-**GET** `/corpus_item`
-
-Retrieves a specific corpus item by unique_id or data.
-
-**Parameters:**
-- `unique_id` (optional): The unique identifier of the corpus item
-- `data` (optional): The data field of the corpus item
-
-**Note:** Either `unique_id` or `data` parameter is required.
-
-**Response:**
-```json
-[
-  {
-    "unique_id": "uuid",
-    "data": "character",
-    "note": {
-      "meaning": ["definition"],
-      "pinyin": ["pronunciation"]
-    },
-    "category": "zyzd",
-    "tags": ["word"]
-  }
-]
-```
-
-**Curl Examples:**
-```bash
-# Search by unique_id
-curl -X GET "https://backend.aidimsum.com/corpus_item?unique_id=your-uuid-here"
-
-# Search by data
-curl -X GET "https://backend.aidimsum.com/corpus_item?data=為"
-```
-
-### 7. Get Random Corpus Item
-**GET** `/random_item`
-
-Retrieves a random corpus item from a specified corpus.
-
-**Parameters:**
-- `corpus_name` (required): The name of the corpus to get a random item from (e.g., "zyzdv2")
-
-**Response:**
-```json
-{
-  "unique_id": "uuid",
-  "data": "character",
-  "note": {
-    "meaning": ["definition1", "definition2"],
-    "pinyin": ["pronunciation1", "pronunciation2"]
-  },
-  "category": "zyzd",
-  "tags": ["word"]
-}
-```
-
-**Curl Example:**
-```bash
-curl -X GET "https://backend.aidimsum.com/random_item?corpus_name=zyzdv2"
-```
-
-## Developer APIs (API Key Required)
-
-### 8. Submit Corpus Item Update
-**POST** `/dev/insert_corpus_item`
-
-Submits an update request for a corpus item. Requires an approved API key.
+Retrieves challenge information by title from the BeWater database.
 
 **Request Body:**
 ```json
 {
-  "uuid": "corpus-item-uuid",
-  "note": {
-    "meaning": ["updated definition"],
-    "pinyin": ["updated pronunciation"],
-    "contributor": "user_id"
-  },
-  "api_key": "your-approved-api-key"
+  "title": "BeWater Monthly Hackathon 0x02"
 }
 ```
 
-**Response (Success):**
+**Response:**
 ```json
-{
-  "message": "Update request submitted successfully",
-  "history_id": 123,
-  "status": "PENDING"
-}
-```
-
-**Response (Error - Invalid API Key):**
-```json
-{
-  "error": "Invalid API key"
-}
-```
-
-**Response (Error - API Key Not Approved):**
-```json
-{
-  "error": "API key not approved"
-}
-```
-
-**Response (Error - Corpus Item Not Found):**
-```json
-{
-  "error": "Corpus item not found"
-}
-```
-
-**Curl Example:**
-```bash
-curl -X POST "https://backend.aidimsum.com/dev/insert_corpus_item" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "uuid": "your-corpus-item-uuid",
-    "note": {
-      "meaning": ["Updated definition"],
-      "pinyin": ["updated_pronunciation"],
-      "contributor": "user123"
-    },
-    "api_key": "your-approved-api-key"
-  }'
-```
-
----
-
-## Admin APIs (Password Required)
-
-### 9. Insert Corpus Item (Admin)
-**POST** `/admin/insert_corpus_item`
-
-Directly inserts a new corpus item. Requires admin password.
-
-**Request Body:**
-```json
-{
-  "data": "character",
-  "note": {
-    "meaning": ["definition"],
-    "pinyin": ["pronunciation"],
-    "contributor": "admin"
-  },
-  "category": "zyzd",
-  "tags": ["word"],
-  "password": "admin-password"
-}
-```
-
-**Response (Success):**
-```json
-{
-  "data": null,
-  "error": null,
-  "count": 1,
-  "status": 201,
-  "statusText": "Created"
-}
-```
-
-**Response (Error - Unauthorized):**
-```json
-{
-  "error": "Unauthorized: Invalid password"
-}
-```
-
-**Curl Example:**
-```bash
-curl -X POST "https://backend.aidimsum.com/admin/insert_corpus_item" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "data": "新",
-    "note": {
-      "meaning": ["new", "fresh"],
-      "pinyin": ["san1"],
-      "contributor": "admin"
-    },
-    "category": "zyzd",
-    "tags": ["word"],
-    "password": "your-admin-password"
-  }'
-```
-
-## Error Responses
-
-All endpoints may return the following error responses:
-
-### 400 Bad Request
-```json
-{
-  "error": "Bad request message"
-}
-```
-
-### 401 Unauthorized
-```json
-{
-  "error": "Unauthorized: Invalid password"
-}
-```
-
-### 403 Forbidden
-```json
-{
-  "error": "API key not approved"
-}
-```
-
-### 404 Not Found
-```json
-{
-  "error": "Resource not found"
-}
-```
-
-### 500 Internal Server Error
-```json
-{
-  "error": "Internal server error"
-}
-```
-
----
-
-## Data Structures
-
-### Corpus Item Structure
-```json
-{
-  "unique_id": "uuid",
-  "data": "character or word",
-  "note": {
-    "meaning": ["definition1", "definition2"],
-    "pinyin": ["pronunciation1", "pronunciation2"],
-    "contributor": "contributor_id",
-    "page": 1,
-    "number": "0001",
-    "others": {
-      "異體": [],
-      "校訂註": null
-    }
-  },
-  "category": "zyzd",
-  "tags": ["word"],
-  "created_at": "2024-01-01T00:00:00Z",
-  "updated_at": "2024-01-01T00:00:00Z"
-}
-```
-
-### ZYZD Item Structure (Input)
-```json
-{
-  "編號": "0005",
-  "頁": 1,
-  "字頭": ["為", "爲"],
-  "義項": [
-    {
-      "釋義": "㈠①作～．事在人～。②能者～師．一分～二",
-      "讀音": [
-        {
-          "粵拼讀音": "wai4",
-          "讀音標記": null,
-          "變調": null
-        }
-      ]
-    }
-  ],
-  "_校訂補充": {
-    "異體": [],
-    "校訂註": null
+[
+  {
+    "id": 165,
+    "externalId": "UKxp-BeWater-Monthly-Hackathon-0x02",
+    "title": "BeWater Monthly Hackathon 0x02",
+    "description": "* Hackathon 评选不透明...",
+    "hostName": "BeWaterDAO",
+    "startTime": "2025-07-31T16:00:00",
+    "endTime": "2025-08-30T16:00:00",
+    "status": "ACTIVE",
+    "location": "ONLINE",
+    "challengeTags": ["cantonese", "bewater", "DAO"],
+    "milestones": [...],
+    "createdAt": "2025-07-29T12:27:05.736",
+    "updatedAt": "2025-07-29T13:20:28.604"
   }
-}
+]
 ```
+
+**Example:**
+```bash
+curl -X POST https://bewater-api.deno.dev/challenge \
+  -H "Content-Type: application/json" \
+  -d '{"title": "BeWater Monthly Hackathon 0x02"}'
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test locally
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the terms specified in the LICENSE file.
 
 ---
 
-## Authentication
-
-### API Key Authentication
-For developer APIs, include your API key in the request body:
-```json
-{
-  "api_key": "your-approved-api-key"
-}
-```
-
-### Admin Password Authentication
-For admin APIs, include the admin password in the request body:
-```json
-{
-  "password": "your-admin-password"
-}
-```
-
----
-
-## Rate Limiting
-
-Currently, there are no explicit rate limits implemented, but please use the API responsibly.
-
----
-
-## Support
-
-For API support or questions, please contact the development team. 
+**Note**: This API is part of the BeWater ecosystem and is designed to work with the BeWater challenge platform and AI DimSum Cantonese corpus project. 
